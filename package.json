@@ -4,7 +4,7 @@
   "description": "Web app service",
   "main": "index.js",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "start": "nodemon server/server.js"
   },
   "repository": {
