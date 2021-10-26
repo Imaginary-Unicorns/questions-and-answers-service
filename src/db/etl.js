@@ -8,12 +8,14 @@ const {
   Photos,
 } = require('./index');
 
-const stream = fs.createReadStream(path.join(__dirname, './csv/answers_photos.csv'));
+const stream = fs.createReadStream(path.join(__dirname, './csv/xab.csv'));
+let count = 0;
 
 connectDb()
   .then(() => {
     stream.pipe(csv())
       .on('data', (data) => {
+        count += 1;
         Photos.findOneAndUpdate({ answer_id: data.answer_id },
           { $push: { urls: data.url } },
           { new: true, upsert: true },
@@ -22,7 +24,7 @@ connectDb()
           });
       })
       .on('end', () => {
-        console.log('done with photos: ');
+        console.log('done with photos: ', count);
       });
   });
 // connectDb()
