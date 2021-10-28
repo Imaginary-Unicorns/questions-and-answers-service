@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 
 const answerSchema = new Schema({
   answer_id: Number,
+  question_id: String,
   body: String,
   date: Date,
   answerer_name: String,
@@ -21,6 +22,7 @@ const answersSchema = new Schema({
 
 const questionSchema = new Schema({
   question_id: Number,
+  product_id: String,
   question_body: String,
   question_date: Date,
   asker_name: String,
@@ -41,9 +43,9 @@ const photoSchema = new Schema({
 });
 
 const Answer = mongoose.model('Answer', answerSchema, 'answers');
-const Answers = mongoose.model('Answers', answersSchema, 'answers');
+const Answers = mongoose.model('Answers', answersSchema, 'answerGroups');
 const Question = mongoose.model('Question', questionSchema, 'questions');
-const Product = mongoose.model('Product', productSchema, 'questions');
+const Product = mongoose.model('Product', productSchema, 'products');
 const Photos = mongoose.model('Photos', photoSchema, 'photos');
 
 const connectDb = () => mongoose.connect(process.env.DATABASE_URL, {
