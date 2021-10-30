@@ -21,12 +21,24 @@ connectDb()
 
 app.get('/qa/questions', async (req, res) => {
   const { query } = req;
+  let count = 5;
+  let page = 0;
+  if (query.count) {
+    count = query.count;
+  }
+  if (query.page) {
+    page = query.page - 1;
+  }
   const response = {
     product_id: query.product_id,
   };
 
   async function dbQuery() {
-    const questions = await Question.find({ product_id: query.product_id });
+    const questions = await Question.find({ product_id: query.product_id })
+      .limit(count)
+      .skip(page * count)
+      .exec();
+
     const withAnswers = questions.map(async (q) => {
       const question = {
         question_id: q.question_id,
@@ -49,7 +61,6 @@ app.get('/qa/questions', async (req, res) => {
           helpfulness: answer.helpfullness,
           photos,
         };
-        console.log(transformedAnswer);
         answers[id] = transformedAnswer;
       });
       question.answers = answers;
@@ -72,24 +83,8 @@ app.get('/qa/questions', async (req, res) => {
       res.status(500).send({ message: err });
     }
   }
-  await send();
+  send();
 });
-// eslint-disable-next-line max-len
-// const answers = response.results.map((question) => Answers.findOne({ question: question.question_id }));
-// Promise.all(answers)
-//   .then((eachAnswer) => {
-//     eachAnswer.forEach((answer) => {
-//       const a = {
-//         id: answer.answer_id,
-//         body: answer.body,
-//         date: answer.date,
-//         answerer_name: answer.answerer_name,
-//         helpfulness: answer.helpfulness,
-//         photos: answer.photos,
-//       };
-//       question.answers[a.id] = a;
-//     });
-//   });
 
 // app.get('/qa/questions/:question_id?/answers', (req, res) => {
 //   const { params } = req;
