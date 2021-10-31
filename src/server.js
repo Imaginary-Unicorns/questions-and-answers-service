@@ -35,7 +35,7 @@ app.get('/qa/questions', async (req, res) => {
   };
 
   async function questionQuery() {
-    const questions = await Question.find({ product_id: query.product_id })
+    const questions = await Question.find({ product_id: query.product_id, reported: false })
       .limit(count)
       .skip(page * count)
       .exec();
@@ -51,7 +51,8 @@ app.get('/qa/questions', async (req, res) => {
         reported: q.reported,
       };
       const answers = {};
-      const findAnswers = await Answer.find({ question_id: q.question_id.toString() });
+      // eslint-disable-next-line max-len
+      const findAnswers = await Answer.find({ question_id: q.question_id.toString(), reported: false });
       findAnswers.forEach(async (answer) => {
         const id = answer.answer_id;
         let photos = {};
@@ -88,7 +89,7 @@ app.get('/qa/questions', async (req, res) => {
             });
         });
     } catch (err) {
-      res.status(500).send({ message: err });
+      res.status(500).send(err);
     }
   }
   send();
@@ -113,7 +114,7 @@ app.get('/qa/questions/:question_id?/answers', (req, res) => {
   };
 
   async function answerQuery() {
-    const findAnswers = await Question.find({ question_id: questionId })
+    const findAnswers = await Question.find({ question_id: questionId, reported: false })
       .limit(count)
       .skip(page * count)
       .exec();
@@ -151,8 +152,65 @@ app.get('/qa/questions/:question_id?/answers', (req, res) => {
             });
         });
     } catch (err) {
-      res.status(500).send({ message: err });
+      res.status(500).send(err);
     }
   }
   send();
+});
+
+// -----POST QUESTION-----
+
+// -----POST ANSWER-----
+
+// -----PUT QUESTION HELPFUL-----
+app.put('/qa/questions/:question_id/helpful', (req, res) => {
+  const id = req.params.question_id;
+  Question.findOneAndUpdate({ question_id: id },
+    { $inc: { helpfullness: 1 } },
+    { new: true })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+// -----PUT QUESTION REPORT-----
+app.put('/qa/questions/:question_id/report', (req, res) => {
+  const id = req.params.question_id;
+  Question.findOneAndUpdate({ question_id: id },
+    { $set: { reported: true } },
+    { new: true })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+// -----PUT ANSWER HELPFUL-----
+app.put('/qa/questions/:answer_id/helpful', (req, res) => {
+  const id = req.params.answer;
+  Answer.findOneAndUpdate({ answer_id: id },
+    { $inc: { helpfullness: 1 } },
+    { new: true })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+// -----PUT ANSWER REPORT-----
+app.put('/qa/questions/:answer_id/report', (req, res) => {
+  const id = req.params.answer_id;
+  Answer.findOneAndUpdate({ answer_id: id },
+    { $set: { reported: true } },
+    { new: true })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
 });
