@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "start": "nodemon src/server.js",
-    "etl": "node src/db/etl.js --max_old_space_size=8192"
+    "etl": "node src/db/etl.js"
   },
   "repository": {
     "type": "git",
