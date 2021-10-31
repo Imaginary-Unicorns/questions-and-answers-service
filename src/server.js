@@ -159,22 +159,22 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
 });
 
 // -----POST QUESTION-----
-app.post('qa/questions', (req, res) => {
-  const { data } = req;
-  console.log(data);
+app.post('/qa/questions', (req, res) => {
+  const { body } = req;
 
   async function save() {
-    const lastQuestion = await Question.find().sort({ _id: -1 }).limit(1);
-    const id = lastQuestion.question_id + 1;
+    const lastQuestion = await Question.find().sort({ _id: -1 }).limit(1).exec();
+    const id = lastQuestion[0].question_id + 1;
+
     const newQuestion = new Question({
       question_id: id,
-      product_id: data.product_id,
-      question_body: data.body,
-      question_date: Date.now,
-      asker_name: data.name,
+      product_id: body.product_id,
+      question_body: body.body,
+      question_date: Date.now(),
+      asker_name: body.name,
       question_helpfullness: 0,
       reported: false,
-      asker_email: data.email,
+      asker_email: body.email,
     });
     newQuestion.save();
   }
@@ -192,22 +192,28 @@ app.post('qa/questions', (req, res) => {
 });
 // -----POST ANSWER-----
 app.post('/qa/questions/:question_id/answers', (req, res) => {
-  const { data } = req;
+  const { body } = req;
   const questionId = req.params.question_id;
-  console.log(data);
+  let photos;
+  if (body.photos.length) {
+    photos = body.photos;
+  } else {
+    photos = [];
+  }
 
   async function save() {
-    const lastAnswer = await Answer.find().sort({ _id: -1 }).limit(1);
-    const id = lastAnswer.answer_id + 1;
+    const lastAnswer = await Answer.find().sort({ _id: -1 }).limit(1).exec();
+    const id = lastAnswer[0].answer_id + 1;
     const newAnswer = new Answer({
       answer_id: id,
       question_id: questionId,
-      body: data.body,
-      date: Date.now,
-      answerer_name: data.name,
+      body: body.body,
+      date: Date.now(),
+      answerer_name: body.name,
       helpfullness: 0,
       reported: false,
-      answerer_email: data.email,
+      answerer_email: body.email,
+      photos,
     });
     newAnswer.save();
   }
