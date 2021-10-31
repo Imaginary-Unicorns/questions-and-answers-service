@@ -96,7 +96,7 @@ app.get('/qa/questions', async (req, res) => {
 });
 
 // -----GET ANSWERS-----
-app.get('/qa/questions/:question_id?/answers', (req, res) => {
+app.get('/qa/questions/:question_id/answers', (req, res) => {
   const questionId = req.params.question_id.toString();
   const { query } = req;
   let count = 5;
@@ -159,9 +159,70 @@ app.get('/qa/questions/:question_id?/answers', (req, res) => {
 });
 
 // -----POST QUESTION-----
+app.post('qa/questions', (req, res) => {
+  const { data } = req;
+  console.log(data);
 
+  async function save() {
+    const lastQuestion = await Question.find().sort({ _id: -1 }).limit(1);
+    const id = lastQuestion.question_id + 1;
+    const newQuestion = new Question({
+      question_id: id,
+      product_id: data.product_id,
+      question_body: data.body,
+      question_date: Date.now,
+      asker_name: data.name,
+      question_helpfullness: 0,
+      reported: false,
+      asker_email: data.email,
+    });
+    newQuestion.save();
+  }
+  async function send() {
+    try {
+      await save()
+        .then(() => {
+          res.status(201).send('CREATED');
+        });
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
+  send();
+});
 // -----POST ANSWER-----
+app.post('/qa/questions/:question_id/answers', (req, res) => {
+  const { data } = req;
+  const questionId = req.params.question_id;
+  console.log(data);
 
+  async function save() {
+    const lastAnswer = await Answer.find().sort({ _id: -1 }).limit(1);
+    const id = lastAnswer.answer_id + 1;
+    const newAnswer = new Answer({
+      answer_id: id,
+      question_id: questionId,
+      body: data.body,
+      date: Date.now,
+      answerer_name: data.name,
+      helpfullness: 0,
+      reported: false,
+      answerer_email: data.email,
+    });
+    newAnswer.save();
+  }
+  async function send() {
+    try {
+      await save()
+        .then(() => {
+          res.status(201).send('CREATED');
+        });
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
+  send();
+});
 // -----PUT QUESTION HELPFUL-----
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
   const id = req.params.question_id;
