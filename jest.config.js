@@ -55,10 +55,10 @@ module.exports = {
   // forceCoverageMatch: [],
 
   // A path to a module which exports an async function that is triggered once before all test suites
-  globalSetup: '<rootDir>/__tests__/setup.js',
+  // globalSetup: '<rootDir>/src/__tests__/setup.js',
 
   // A path to a module which exports an async function that is triggered once after all test suites
-  globalTeardown: '<rootDir>/__tests__/teardown.js',
+  // globalTeardown: '<rootDir>/src/__tests__/teardown.js',
 
   // A set of global variables that need to be available in all test environments
   // globals: {},
@@ -129,7 +129,7 @@ module.exports = {
   // setupFiles: [],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  setupFilesAfterEnv: ['<rootDir>/__tests__/setupAfterEnv.js'],
+  // setupFilesAfterEnv: ['<rootDir>/src/__tests__/afterEnv.js'],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -139,7 +139,7 @@ module.exports = {
 
   // The test environment that will be used for testing
   // testEnvironment: "jest-environment-node",
-  testEnvironment: '<rootDir>/__tests__/environment.js',
+  // testEnvironment: '<rootDir>/src/_tests__/testEnvironment.js',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -149,7 +149,7 @@ module.exports = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    '**/__tests__/**/*.test.js',
+    '**/_tests/**/*.test.js',
     // "**/__tests__/**/*.[jt]s?(x)",
     // "**/?(*.)+(spec|test).[tj]s?(x)"
   ],

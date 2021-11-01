@@ -1,9 +1,9 @@
 const express = require('express');
-const { connectDb } = require('./db/index');
+// const { connectDb } = require('../db/index');
 const {
   // Product, Answers,
   Question, Answer, Photos,
-} = require('./db/index');
+} = require('../db/index');
 
 require('dotenv').config();
 
@@ -11,13 +11,7 @@ const app = express();
 
 app.use(express.json());
 
-connectDb()
-  .then(async () => {
-    app.listen(4000, () => {
-      // eslint-disable-next-line no-console
-      console.log('Listening on port 4000...');
-    });
-  });
+module.exports = app;
 
 // -----GET QUESTIONS-----
 app.get('/qa/questions', async (req, res) => {
