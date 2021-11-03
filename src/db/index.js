@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+const connectDb = () => mongoose.connect(process.env.DATABASE_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 const { Schema } = mongoose;
 
 const answerSchema = new Schema({
@@ -47,11 +51,6 @@ const Answers = mongoose.model('Answers', answersSchema, 'answerGroups');
 const Question = mongoose.model('Question', questionSchema, 'questions');
 const Product = mongoose.model('Product', productSchema, 'products');
 const Photos = mongoose.model('Photos', photoSchema, 'photos');
-
-const connectDb = () => mongoose.connect(process.env.DATABASE_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
 
 module.exports = {
   Product,
