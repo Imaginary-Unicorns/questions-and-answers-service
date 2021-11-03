@@ -1,9 +1,9 @@
 const express = require('express');
-const { connectDb } = require('./db/index');
+// const { connectDb } = require('../db/index');
 const {
   // Product, Answers,
   Question, Answer, Photos,
-} = require('./db/index');
+} = require('../db/index');
 
 require('dotenv').config();
 
@@ -11,17 +11,11 @@ const app = express();
 
 app.use(express.json());
 
-connectDb()
-  .then(async () => {
-    app.listen(4000, () => {
-      // eslint-disable-next-line no-console
-      console.log('Listening on port 4000...');
-    });
-  });
+module.exports = app;
 
 // -----GET QUESTIONS-----
-app.get('/qa/questions', async (req, res) => {
-  const { query } = req;
+app.get('/qa/questions/:product_id', async (req, res) => {
+  const { params, query } = req;
   let count = 5;
   let page = 0;
   if (query.count) {
@@ -31,11 +25,11 @@ app.get('/qa/questions', async (req, res) => {
     page = query.page - 1;
   }
   const response = {
-    product_id: query.product_id,
+    product_id: params.product_id,
   };
 
   async function questionQuery() {
-    const questions = await Question.find({ product_id: query.product_id, reported: false })
+    const questions = await Question.find({ product_id: params.product_id, reported: false })
       .limit(count)
       .skip(page * count)
       .exec();
@@ -114,7 +108,7 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
   };
 
   async function answerQuery() {
-    const findAnswers = await Question.find({ question_id: questionId, reported: false })
+    const findAnswers = await Answer.find({ question_id: questionId, reported: false })
       .limit(count)
       .skip(page * count)
       .exec();
