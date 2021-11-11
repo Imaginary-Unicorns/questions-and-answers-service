@@ -17,6 +17,7 @@ export const options = {
   ],
 };
 
+// eslint-disable-next-line func-names
 export default function () {
   const BASE_URL = 'http://127.0.0.1:4000';
   const response = http.get(`${BASE_URL}/qa/questions/59557/`);
