@@ -316,26 +316,38 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
 });
 // -----PUT QUESTION HELPFUL-----
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
-  const id = req.params.question_id;
-  Question.findOneAndUpdate({ question_id: id },
-    { $inc: { question_helpfullness: 1 } },
-    { new: true })
-    .then(() => {
-      res.status(204).send();
-    })
+  const questionId = req.params.question_id;
+  const productId = req.body.product_id.toString();
+  (async () => {
+    const id = await Question.find({ product_id: productId, question_id: questionId }, '_id');
+    Question.findByIdAndUpdate(id, { $inc: { question_helpfullness: 1 } },
+      { new: true })
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+  })()
     .catch((err) => {
       res.status(500).send(err);
     });
 });
 // -----PUT QUESTION REPORT-----
 app.put('/qa/questions/:question_id/report', (req, res) => {
-  const id = req.params.question_id;
-  Question.findOneAndUpdate({ question_id: id },
-    { $set: { reported: true } },
-    { new: true })
-    .then(() => {
-      res.status(204).send();
-    })
+  const questionId = req.params.question_id;
+  const productId = req.body.product_id.toString();
+  (async () => {
+    const id = await Question.find({ product_id: productId, question_id: questionId }, '_id');
+    Question.findByIdAndUpdate(id, { $set: { reported: true } },
+      { new: true })
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+  })()
     .catch((err) => {
       res.status(500).send(err);
     });
