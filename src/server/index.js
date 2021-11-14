@@ -7,4 +7,7 @@ connectDb()
       // eslint-disable-next-line no-console
       console.log('Listening on port 4000...');
     });
+  })
+  .catch((err) => {
+    console.log('Connection error: ', err);
   });

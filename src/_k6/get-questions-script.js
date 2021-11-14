@@ -4,23 +4,32 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-  stages: [
-    { duration: '30s', target: 40 },
-    // { duration: '1m', target: 40 },
-    { duration: '30s', target: 80 },
-    // { duration: '1m', target: 80 },
-    { duration: '30s', target: 120 },
-    // { duration: '1m', target: 120 },
-    { duration: '30s', target: 200 },
-    // { duration: '1m', target: 200 },
-    { duration: '1m', target: 0 },
-  ],
+  scenarios: {
+    questions: {
+      executor: 'ramping-arrival-rate',
+      startRate: 25,
+      timeUnit: '1s',
+      preAllocatedVUs: 25,
+      maxVUs: 500,
+      stages: [
+        { duration: '30s', target: 100 },
+        // { duration: '1m', target: 40 },
+        { duration: '1m', target: 200 },
+        // { duration: '1m', target: 80 },
+        { duration: '1m', target: 300 },
+        // { duration: '1m', target: 120 },
+        { duration: '1m', target: 500 },
+        // { duration: '1m', target: 200 },
+        { duration: '1m', target: 0 },
+      ],
+    },
+  },
 };
 
 // eslint-disable-next-line func-names
 export default function () {
   const BASE_URL = 'http://127.0.0.1:4000';
-  const response = http.get(`${BASE_URL}/qa/questions/59557/`);
+  const response = http.get(`${BASE_URL}/qa/questions/1000000/`);
   check(response, { 'status 200': (res) => res.status === 200 });
   // const responses = http.batch([
   //   ['GET', `${BASE_URL}/qa/questions/1/`, null, { tags: { name: 'Questions' } }],
