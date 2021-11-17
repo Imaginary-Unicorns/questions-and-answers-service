@@ -12,8 +12,8 @@ const {
   Photos,
 } = require('./index');
 
-const stream = fs.createReadStream(path.join(__dirname, './csv/xac.csv'));
-const file = 'xac';
+const stream = fs.createReadStream(path.join(__dirname, './csv/xad.csv'));
+const file = 'xad';
 // let currentId = '0';
 // let currentUrls = [];
 
@@ -68,31 +68,31 @@ const file = 'xac';
 //   });
 
 // ANSWERS CSV LOAD
-connectDb()
-  .then(() => {
-    let count = 0;
-    stream.pipe(csv())
-      .on('data', async (data) => {
-        count += 1;
-        // const photoId = data.id.toString();
-        // const photos = await Photos.findOne({ answer_id: photoId });
-        const newAnswer = new Answer({
-          answer_id: data.id,
-          question_id: data.question_id,
-          body: data.body,
-          date: data.date_written,
-          answerer_name: data.answerer_name,
-          helpfullness: data.helpful,
-          reported: data.reported,
-          photos: [],
-          answerer_email: data.answerer_email,
-        });
-        newAnswer.save();
-      })
-      .on('end', () => {
-        console.log('done with answers: ', count, file);
-      });
-  });
+// connectDb()
+//   .then(() => {
+//     let count = 0;
+//     stream.pipe(csv())
+//       .on('data', async (data) => {
+//         count += 1;
+//         // const photoId = data.id.toString();
+//         // const photos = await Photos.findOne({ answer_id: photoId });
+//         const newAnswer = new Answer({
+//           answer_id: data.id,
+//           question_id: data.question_id,
+//           body: data.body,
+//           date: data.date_written,
+//           answerer_name: data.answerer_name,
+//           helpfullness: data.helpful,
+//           reported: data.reported,
+//           photos: [],
+//           answerer_email: data.answerer_email,
+//         });
+//         newAnswer.save();
+//       })
+//       .on('end', () => {
+//         console.log('done with answers: ', count, file);
+//       });
+//   });
 
 // FIRST ATTEMPT AT ANSWERS
 //       newAnswer.photos = results.urls;
