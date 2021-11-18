@@ -6,6 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test jest --collectCoverage",
     "start": "nodemon src/server/index.js",
+    "load-balancer": "nodemon src/server/load-balancer.js",
     "etl": "node src/db/etl.js"
   },
   "repository": {
