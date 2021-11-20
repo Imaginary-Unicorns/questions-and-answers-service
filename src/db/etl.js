@@ -12,9 +12,9 @@ const {
   Photos,
 } = require('./index');
 
-const stream = fs.createReadStream(path.join(__dirname, './csv/xad.csv'));
-const file = 'xad';
-// let currentId = '0';
+const stream = fs.createReadStream(path.join(__dirname, './csv/xau.csv'));
+const file = 'xau';
+let currentId = '0';
 // let currentUrls = [];
 
 // PHOTOS CSV LOAD
@@ -47,6 +47,48 @@ const file = 'xad';
 //         console.log('done with photos: ', count, currentId, currentUrls);
 //       });
 //   });
+
+// PHOTOS CSV LOAD INTO ANSWER DOCUMENTS
+connectDb()
+  .then(() => {
+    let count = 0;
+    stream.pipe(csv())
+      .on('data', (data) => {
+        const photo = {
+          id: Number(data.id),
+          url: data.url,
+        };
+        // if (data.answer_id === currentId) {
+        //   currentUrls.push(JSON.stringify(photo));
+        // } else if (currentId === '0') {
+        //   currentUrls.push(JSON.stringify(photo));
+        //   currentId = data.answer_id;
+        // } else {
+        count += 1;
+        currentId = data.answer_id;
+        Answer.findOneAndUpdate({ answer_id: Number(data.answer_id) },
+          { $push: { photos: photo } },
+          { new: true },
+          ((err) => {
+            if (err) console.log(err);
+          }));
+        // }
+        // currentId = data.answer_id;
+        // currentUrls = [JSON.stringify(photo)];
+        // const newPhotos = new Photos({
+        //   answer_id: currentId,
+        //   urls: currentUrls,
+        // });
+        // newPhotos.save((err) => {
+        //   if (err) {
+        //     console.log('error');
+        //   }
+        // });
+      })
+      .on('end', () => {
+        console.log('done with photos: ', count, file, currentId);
+      });
+  });
 
 // ELT--TRANSFROM DB in progress
 // connectDb()
