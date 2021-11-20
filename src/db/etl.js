@@ -12,8 +12,8 @@ const {
   Photos,
 } = require('./index');
 
-const stream = fs.createReadStream(path.join(__dirname, './csv/xau.csv'));
-const file = 'xau';
+const stream = fs.createReadStream(path.join(__dirname, './csv/xaa.csv'));
+const file = 'xaa';
 let currentId = '0';
 // let currentUrls = [];
 
