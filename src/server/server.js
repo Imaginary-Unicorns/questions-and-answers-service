@@ -3,8 +3,8 @@ require('newrelic');
 const express = require('express');
 // const { connectDb } = require('../db/index');
 const {
-  // Product, Answers,
-  Question, Answer, Photos,
+  // Product, Answers, Photos
+  Question, Answer,
 } = require('../db/index');
 
 require('dotenv').config();
@@ -56,10 +56,15 @@ app.get('/qa/questions/:product_id', async (req, res) => {
 
       for (let j = 0; j < findAnswers.length; j += 1) {
         const id = findAnswers[j].answer_id;
-        let photos = [];
-        const findPhotos = await Photos.find({ answer_id: id.toString() });
-        if (findPhotos.length) {
-          photos = findPhotos[0].urls;
+        // let photos = [];
+        // const findPhotos = await Photos.find({ answer_id: id.toString() });
+        // if (findPhotos.length) {
+        //   photos = findPhotos[0].urls;
+        // }
+        const foundPhotos = findAnswers[j].photos;
+        const photos = [];
+        for (let k = 0; k < foundPhotos.length; k += 1) {
+          photos.push(foundPhotos[k].url);
         }
         const transformedAnswer = {
           id,
@@ -81,65 +86,6 @@ app.get('/qa/questions/:product_id', async (req, res) => {
       res.status(500).send(err);
     });
 });
-// async function questionQuery() {
-//   const questions = await Question.find({ product_id: params.product_id, reported: false })
-//     .limit(count)
-//     .skip(page * count);
-
-//   const withAnswers = questions.map(async (q) => {
-//     const questionId = q.question_id;
-// const question = {
-//   question_id: questionId,
-//   question_body: q.question_body,
-//   question_date: q.question_date,
-//   asker_name: q.asker_name,
-//   question_helpfulness: q.question_helpfullness,
-//   reported: q.reported,
-// };
-//     const answers = {};
-// eslint-disable-next-line max-len
-// const findAnswers = await Answer.find({ question_id: q.question_id.toString(), reported: false });
-// findAnswers.forEach(async (answer) => {
-//   console.log('answer', answer);
-//   const id = answer.answer_id;
-//   let photos = {};
-//   const findPhotos = await Photos.find({ answer_id: id.toString() });
-//   if (findPhotos) {
-//     photos = findPhotos;
-//   } else {
-//     photos.urls = [];
-//   }
-//   const transformedAnswer = {
-//     id,
-//     body: answer.body,
-//     date: answer.date,
-//     answerer_name: answer.answerer_name,
-//     helpfulness: answer.helpfullness,
-//     photos: photos.urls,
-//   };
-//   answers[id] = transformedAnswer;
-// });
-// question.answers = answers;
-//     return question;
-//   });
-//   return withAnswers;
-// }
-
-// async function send() {
-//   try {
-//     await questionQuery()
-//       .then((questions) => {
-//         Promise.all(questions)
-//           .then((results) => {
-//             response.results = results;
-//             res.status(200).send(response);
-//           });
-//       });
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// }
-// send();
 
 // -----GET ANSWERS-----
 app.get('/qa/questions/:question_id/answers', (req, res) => {
@@ -171,10 +117,15 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
 
     for (let i = 0; i < answers.length; i += 1) {
       const id = answers[i].answer_id;
-      let photos = [];
-      const findPhotos = await Photos.find({ answer_id: id.toString() });
-      if (findPhotos.length) {
-        photos = findPhotos[0].urls;
+      // let photos = [];
+      // const findPhotos = await Photos.find({ answer_id: id.toString() });
+      // if (findPhotos.length) {
+      //   photos = findPhotos[0].urls;
+      // }
+      const foundPhotos = answers[i].photos;
+      const photos = [];
+      for (let j = 0; j < foundPhotos.length; j += 1) {
+        photos.push(foundPhotos[j].url);
       }
       const transformedAnswer = {
         answer_id: id,
@@ -192,49 +143,6 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
       res.status(500).send(err);
     });
 });
-// async function answerQuery() {
-//   const findAnswers = await Answer.find({ question_id: questionId, reported: false })
-//     .limit(count)
-//     .skip(page * count)
-//     .exec();
-
-//   const results = findAnswers.map(async (answer) => {
-//     const id = answer.answer_id;
-//     let photos = {};
-//     const findPhotos = await Photos.find({ answer_id: id.toString() });
-//     if (findPhotos) {
-//       photos = findPhotos;
-//     } else {
-//       photos.urls = [];
-//     }
-//     const transformedAnswer = {
-//       answer_id: id,
-//       body: answer.body,
-//       date: answer.date,
-//       answerer_name: answer.answerer_name,
-//       helpfulness: answer.helpfullness,
-//       photos: photos.urls,
-//     };
-//     return transformedAnswer;
-//   });
-//   return results;
-// }
-
-// async function send() {
-//   try {
-//     await answerQuery()
-//       .then((answers) => {
-//         Promise.all(answers)
-//           .then((results) => {
-//             response.results = results;
-//             res.status(200).send(response);
-//           });
-//       });
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// }
-// send();
 
 // -----POST QUESTION-----
 app.post('/qa/questions', (req, res) => {
@@ -272,11 +180,15 @@ app.post('/qa/questions', (req, res) => {
 app.post('/qa/questions/:question_id/answers', (req, res) => {
   const { body } = req;
   const questionId = req.params.question_id;
-  let photos;
+  const photos = [];
   if (body.photos.length) {
-    photos = body.photos;
-  } else {
-    photos = [];
+    for (let i = 0; i < body.photos.length; i += 1) {
+      const photo = {
+        id: i,
+        url: body.photos[i],
+      };
+      photos.push(photo);
+    }
   }
 
   async function save() {
@@ -291,16 +203,17 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
       helpfullness: 0,
       reported: false,
       answerer_email: body.email,
+      photos,
     });
     newAnswer.save();
 
-    if (photos.length) {
-      const newPhotos = new Photos({
-        answer_id: id,
-        urls: photos,
-      });
-      newPhotos.save();
-    }
+    // if (photos.length) {
+    //   const newPhotos = new Photos({
+    //     answer_id: id,
+    //     urls: photos,
+    //   });
+    //   newPhotos.save();
+    // }
   }
   async function send() {
     try {
